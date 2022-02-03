@@ -1,24 +1,25 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float
-                 ) -> None:
-        self.training_type = training_type  # тип тренировки
-        self.duration = duration  # длительность тренировки
-        self.distance = distance  # дистанция, преодолённая за тренировку
-        self.speed = speed  # средняя скорость движения
-        self.calories = calories  # потраченные за время тренировки килокалории
+    training_type: str  # тип тренировки
+    duration: float  # длительность тренировки
+    distance: float  # дистанция, преодолённая за тренировку
+    speed: float  # средняя скорость движения
+    calories: float  # потраченные за время тренировки килокалории
+    message = 'Тип тренировки: {training_type}; \
+Длительность: {duration:.3f} ч.; \
+Дистанция: {distance:.3f} км; Ср. скорость: {speed:.3f} км/ч; \
+Потрачено ккал: {calories:.3f}.'
 
     def get_message(self) -> str:
-        message = f'''Тип тренировки: {self.training_type}; \
-Длительность: {self.duration:.3f} ч.; \
-Дистанция: {self.distance:.3f} км; Ср. скорость: {self.speed:.3f} км/ч; \
-Потрачено ккал: {self.calories:.3f}.'''
-        return message
+        return self.message.format(training_type=self.training_type,
+                                   duration=self.duration,
+                                   distance=self.distance,
+                                   speed=self.speed,
+                                   calories=self.calories)
 
 
 class Training:
@@ -122,18 +123,17 @@ class Swimming(Training):
         return calories
 
 
+class_select: dict = {'SWM': Swimming,
+                      'RUN': Running,
+                      'WLK': SportsWalking}
+
+
 def read_package(workout_type: str,
                  data: list
                  ) -> Training:
     """Прочитать данные полученные от датчиков."""
-    if workout_type == 'SWM':
-        obj = Swimming(*data)
-    elif workout_type == 'RUN':
-        obj = Running(*data)
-    elif workout_type == 'WLK':
-        obj = SportsWalking(*data)
-    else:
-        obj = None
+
+    obj = class_select[workout_type](*data)
     return obj
 
 
